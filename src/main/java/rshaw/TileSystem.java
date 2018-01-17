@@ -55,7 +55,7 @@ public class TileSystem {
         return Math.cos(lat * Math.PI / 180) * 2 * Math.PI * TileSystem.EARTH_RADIUS / TileSystem.map_size(level);
     }
 
-    public static PixelCoord geo_to_pixel(double lat, double lon, int level) {
+    public static int[] geo_to_pixel(double lat, double lon, int level) {
         if(!(1 <= level && level <= 23)){
             throw new LevelNotValid();
         }
@@ -70,15 +70,15 @@ public class TileSystem {
         int pixel_x = (int) clip(x * map_size + 0.5, new double[]{0, map_size - 1});
         int pixel_y = (int) clip(y * map_size + 0.5, new double[]{0, map_size - 1});
 
-        return new PixelCoord(pixel_x, pixel_y);
+        return new int[]{pixel_x, pixel_y};
     }
 
-    public static double[] pixel_to_geo(PixelCoord pixelCoord, int level){
+    public static double[] pixel_to_geo(int[] pixelCoord, int level){
         if(!(1 <= level && level <= 23)){
             throw new LevelNotValid();
         }
-        int pixel_x = pixelCoord.x;
-        int pixel_y = pixelCoord.y;
+        int pixel_x = pixelCoord[0];
+        int pixel_y = pixelCoord[1];
         float map_size = (float) map_size(level);
         double x = (clip(pixel_x, new double[]{0, map_size - 1}) / map_size) - 0.5;
         double y = 0.5 - (clip(pixel_y, new double[]{0, map_size - 1}) / map_size);
@@ -94,38 +94,37 @@ public class TileSystem {
     /**
      * Transform pixel to tile coordinates
      */
-    public static TileCoord pixel_to_tile(PixelCoord pixelCoord){
-        return new TileCoord(
-                pixelCoord.x / 256,
-                pixelCoord.y / 256,
-                null
-        );
+    public static int[] pixel_to_tile(int[] pixelCoord){
+        return new int[]{
+            pixelCoord[0] / 256,
+            pixelCoord[1] / 256,
+        };
     }
 
     /**
      * Transform tile coordinates to pixel coordinates
      */
-    public static PixelCoord tile_to_pixel(TileCoord tileCoord){
+    public static int[] tile_to_pixel(int[] tileCoord){
         return tile_to_pixel(tileCoord);
     }
 
     /**
      * Transform tile coordinates to pixel coordinates
      */
-    public static PixelCoord tile_to_pixel(TileCoord tileCoord, boolean centered){
-        int x = tileCoord.x * 256;
-        int y = tileCoord.y * 256;
+    public static int[] tile_to_pixel(int[] tileCoord, boolean centered){
+        int x = tileCoord[0] * 256;
+        int y = tileCoord[1] * 256;
         if(centered){
             x += 128;
             y += 128;
         }
-        return new PixelCoord(x, y);
+        return new int[]{x, y};
     }
 
     /**
      * Transform tile coordinates to quadkey
      */
-    public static String tile_to_quadkey(TileCoord tileCoord, int level){
+    public static String tile_to_quadkey(int[] tileCoord, int level){
         if(!(1 <= level && level <= 23)){
             throw new LevelNotValid();
         }
@@ -134,10 +133,10 @@ public class TileSystem {
             int bit = level - i;
             int digit = (int) '0';
             int mask = 1 << (bit - 1);
-            if((tileCoord.x & mask) != 0){
+            if((tileCoord[0] & mask) != 0){
                 digit += 1;
             }
-            if((tileCoord.y & mask) != 0){
+            if((tileCoord[1] & mask) != 0){
                 digit += 2;
             }
             quadkey += (char) digit;
@@ -148,7 +147,7 @@ public class TileSystem {
     /**
      * Transform quadkey to tile coordinates
      */
-    public static TileCoord quadkey_to_tile(String quadkey){
+    public static int[] quadkey_to_tile(String quadkey){
         if (!valid_key(quadkey)) {
             throw new KeyNotValid();
         }
@@ -169,39 +168,6 @@ public class TileSystem {
                 y |=  mask;
             }
         }
-        return new TileCoord(x, y, level);
-
+        return new int[]{x, y, level};
     }
-
-    static class Coord {
-        public int x;
-        public int y;
-
-        Coord(int x, int y){
-            this.x = x;
-            this.y = y;
-        }
-
-        @Override
-        public String toString() {
-            return "x: " + x +
-                    "\ny: " + y;
-        }
-    }
-
-    public static class TileCoord extends Coord{
-        Integer level;
-        TileCoord(int x, int y, Integer level){
-            super(x, y);
-            this.level = level;
-        }
-
-    }
-
-    public static class PixelCoord extends Coord{
-        PixelCoord(int x, int y){
-            super(x, y);
-        }
-    }
-
 }

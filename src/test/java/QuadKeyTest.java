@@ -100,9 +100,10 @@ public class QuadKeyTest {
     @Test
     public void testToTile(){
         QuadKey qk = new QuadKey("0313");
-        TileSystem.TileCoord tc = qk.to_tile();
-        assertEquals(7, tc.x);
-        assertEquals(5, tc.y);
+        int[] tc = qk.to_tile();
+        assertEquals(7, tc[0]);
+        assertEquals(5, tc[1]);
+        assertEquals(4, tc[2]);
     }
 
 }

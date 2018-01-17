@@ -3,9 +3,6 @@ package rshaw;
 import java.util.ArrayList;
 import java.util.List;
 
-import rshaw.TileSystem.PixelCoord;
-import rshaw.TileSystem.TileCoord;
-
 /**
  * @author Ryan Shaw
  */
@@ -81,7 +78,7 @@ public class QuadKey {
         return keys;
     }
 
-    public TileCoord to_tile(){
+    public int[] to_tile(){
         return TileSystem.quadkey_to_tile(this.key);
     }
 
@@ -90,9 +87,9 @@ public class QuadKey {
     }
 
     public double[] to_geo(boolean centered){
-        TileCoord tc = TileSystem.quadkey_to_tile(this.key);
-        PixelCoord pixel = TileSystem.tile_to_pixel(tc);
-        return TileSystem.pixel_to_geo(pixel, tc.level);
+        int[] tc = TileSystem.quadkey_to_tile(this.key);
+        int[] pixel = TileSystem.tile_to_pixel(tc);
+        return TileSystem.pixel_to_geo(pixel, tc[2]);
 
     }
 
@@ -110,8 +107,8 @@ public class QuadKey {
     }
 
     public static QuadKey from_geo(double[] coords, int level){
-        PixelCoord pixel = TileSystem.geo_to_pixel(coords[0], coords[1], level);
-        TileCoord tile = TileSystem.pixel_to_tile(pixel);
+        int[] pixel = TileSystem.geo_to_pixel(coords[0], coords[1], level);
+        int[] tile = TileSystem.pixel_to_tile(pixel);
         String key = TileSystem.tile_to_quadkey(tile, level);
         return new QuadKey(key);
     }
