@@ -19,6 +19,9 @@ public class QuadKey {
      * A quadkey must be between 1 and 23 digits and only contain digit[0-3]
      */
     public QuadKey(String key){
+        if(!TileSystem.valid_key(key)){
+            throw new TileSystem.KeyNotValid();
+        }
         this.key = key;
         this.level = key.length();
     }
@@ -39,7 +42,7 @@ public class QuadKey {
         return new QuadKey(this.key.substring(0, this.key.length() - 1));
     }
 
-    public List<String> nearby(){
+    public String[] nearby(){
         throw new RuntimeException("Not Implemented");
     }
 
@@ -98,10 +101,22 @@ public class QuadKey {
         return key;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof QuadKey)){
+            return false;
+        }
+        return obj.toString().equals(this.toString());
+    }
+
     public static QuadKey from_geo(double[] coords, int level){
         PixelCoord pixel = TileSystem.geo_to_pixel(coords[0], coords[1], level);
         TileCoord tile = TileSystem.pixel_to_tile(pixel);
         String key = TileSystem.tile_to_quadkey(tile, level);
         return new QuadKey(key);
+    }
+
+    public static QuadKey from_str(String qk_str){
+        return new QuadKey(qk_str);
     }
 }

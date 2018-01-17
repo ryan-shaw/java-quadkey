@@ -27,7 +27,7 @@ public class TileSystem {
         -180., 180.
     };
 
-    private static boolean valid_key(String key){
+    public static boolean valid_key(String key){
         Pattern p = Pattern.compile("^[0-3]+$");
         Matcher m = p.matcher(key);
         return m.matches();
@@ -35,7 +35,7 @@ public class TileSystem {
 
     public static double clip(double n, double[] minMax){
         if(!(minMax[0] <= minMax[1])){
-
+            //TODO: Fix?
         }
         return Math.min(Math.max(n, minMax[0]), minMax[1]);
     }
